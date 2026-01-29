@@ -56,6 +56,11 @@ async def landing_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/file", response_class=HTMLResponse)
+async def file_page(request: Request):
+    return templates.TemplateResponse("file.html", {"request": request})
+
+
 @app.get("/convert", response_class=PlainTextResponse)
 async def convert_url(url: str):
     if not url:

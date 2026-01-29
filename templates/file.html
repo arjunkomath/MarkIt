@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
-    <title>MarkIt - Convert to Markdown</title>
-    <meta name="description" content="Convert URLs and files to Markdown. Simple, fast, and free.">
-    <meta name="keywords" content="markdown, converter, url to markdown, file to markdown, html to markdown">
+    <title>MarkIt - Convert File to Markdown</title>
+    <meta name="description" content="Convert files to Markdown. Simple, fast, and free.">
+    <meta name="keywords" content="markdown, converter, file to markdown, html to markdown">
     <meta name="author" content="Arjun Komath">
     <meta property="og:title" content="MarkIt - Convert to Markdown">
     <meta property="og:description" content="Convert URLs and files to Markdown. Simple, fast, and free.">
@@ -91,7 +91,6 @@
             background-size: 20px 6px;
         }
 
-        input[type="url"],
         input[type="file"] {
             font-family: inherit;
             font-size: 16px;
@@ -102,7 +101,6 @@
             margin-bottom: 12px;
         }
 
-        input[type="url"]:focus,
         input[type="file"]:focus {
             outline: none;
             border-color: #999;
@@ -215,14 +213,12 @@
                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='6' viewBox='0 0 20 6'%3E%3Cpath d='M0 3 Q5 0 10 3 T20 3' fill='none' stroke='%23333' stroke-width='1.5'/%3E%3C/svg%3E");
             }
 
-            input[type="url"],
             input[type="file"] {
                 background: #2a2a2a;
                 border-color: #333;
                 color: #e5e5e5;
             }
 
-            input[type="url"]:focus,
             input[type="file"]:focus {
                 border-color: #555;
             }
@@ -239,10 +235,6 @@
                 background: #2a2a2a;
                 border-color: #333;
             }
-
-            input::placeholder {
-                color: #666;
-            }
         }
     </style>
 </head>
@@ -251,10 +243,10 @@
         <h1>MarkIt</h1>
         <p>Convert URLs and files to Markdown</p>
 
-        <h2>Convert URL / <a href="/file" class="section-link">File →</a></h2>
-        <p>Enter a URL to convert its content to Markdown:</p>
-        <form id="urlForm">
-            <input type="url" id="urlInput" placeholder="https://example.com" required>
+        <h2>Convert File / <a href="/" class="section-link">URL →</a></h2>
+        <p>Upload a file to convert to Markdown:</p>
+        <form id="fileForm">
+            <input type="file" id="fileInput" required>
             <button type="submit">Convert →</button>
         </form>
 
@@ -281,19 +273,13 @@
 
         <hr>
 
-        <h2>API</h2>
-        <p>You can also use the API directly:</p>
-        <pre>GET /convert?url=https://example.com</pre>
-
-        <hr>
-
         <footer>
             Made by <a href="https://github.com/arjunkomath">Arjun Komath</a> · <a href="https://github.com/arjunkomath/MarkIt">Source</a>
         </footer>
     </article>
 
     <script>
-        const urlForm = document.getElementById('urlForm');
+        const fileForm = document.getElementById('fileForm');
         const resultContainer = document.getElementById('resultContainer');
         const resultContent = document.getElementById('resultContent');
         const loadingContainer = document.getElementById('loadingContainer');
@@ -321,16 +307,23 @@
             errorMessage.textContent = message;
         }
 
-        urlForm.addEventListener('submit', async (e) => {
+        fileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const url = document.getElementById('urlInput').value;
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return;
+
             showLoading();
+            const formData = new FormData();
+            formData.append('file', file);
 
             try {
-                const response = await fetch(`/convert?url=${encodeURIComponent(url)}`);
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
                 if (!response.ok) {
                     const error = await response.json();
-                    throw new Error(error.detail || 'Failed to convert URL');
+                    throw new Error(error.detail || 'Failed to convert file');
                 }
                 const text = await response.text();
                 showResult(text);
