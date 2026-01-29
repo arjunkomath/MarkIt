@@ -1,6 +1,20 @@
 # MarkIt
 
-Convert URLs and files to Markdown using Microsoft's MarkItDown library.
+A simple web interface and API for converting URLs and files to Markdown.
+
+Powered by [MarkItDown](https://github.com/microsoft/markitdown) from Microsoft.
+
+## Supported Formats
+
+- PDF
+- Word, PowerPoint, Excel
+- HTML
+- Images (with EXIF metadata)
+- Audio (with speech transcription)
+- CSV, JSON, XML
+- ZIP files
+- YouTube URLs
+- EPubs
 
 ## Setup
 
@@ -21,6 +35,7 @@ Open http://localhost:8000
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | Landing page |
+| GET | `/health` | Health check |
 | GET | `/convert?url=<url>` | Convert URL to markdown |
 | GET | `/convert/{url:path}` | Convert URL (path-style) |
 
@@ -36,3 +51,7 @@ docker run -p 8000:8000 markit
 ```bash
 curl "http://localhost:8000/convert?url=https://example.com"
 ```
+
+## License
+
+MIT
