@@ -1,0 +1,16 @@
+[project]
+name = "markit"
+version = "0.1.0"
+description = "Convert URLs and files to Markdown"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "markitdown[all]",
+    "python-multipart",
+    "jinja2",
+    "validators",
+]
+
+[project.scripts]
+markit = "main:app"

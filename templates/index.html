@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkIt - Convert to Markdown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 18px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+            margin: 0;
+            padding: 48px 24px;
+        }
+
+        article {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 0 0 8px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        h1 + p {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 32px;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin: 32px 0 16px;
+        }
+
+        p {
+            margin: 0 0 16px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #e5e5e5;
+            margin: 32px 0;
+        }
+
+        input[type="url"],
+        input[type="file"] {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        input[type="url"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #999;
+        }
+
+        button {
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 16px;
+            background: none;
+            border: none;
+            color: #1a1a1a;
+            cursor: pointer;
+            padding: 2px 4px;
+            margin: -2px -4px;
+            text-decoration: none;
+            transition: background-color 0.15s ease;
+        }
+
+        button:hover {
+            background-color: #fff176;
+        }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            background: #f8f8f8;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            padding: 16px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 0 0 16px;
+        }
+
+        blockquote {
+            border-left: 3px solid #e74c3c;
+            margin: 0;
+            padding-left: 16px;
+            color: #c0392b;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-header h2 {
+            margin: 0;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <article>
+        <h1>MarkIt</h1>
+        <p>Convert URLs and files to Markdown</p>
+
+        <h2>Convert URL</h2>
+        <p>Enter a URL to convert its content to Markdown:</p>
+        <form id="urlForm">
+            <input type="url" id="urlInput" placeholder="https://example.com" required>
+            <button type="submit">Convert →</button>
+        </form>
+
+        <hr>
+
+        <h2>Upload File</h2>
+        <p>Or upload a file to convert:</p>
+        <form id="fileForm">
+            <input type="file" id="fileInput" required>
+            <button type="submit">Convert →</button>
+        </form>
+
+        <div id="loadingContainer" class="hidden">
+            <hr>
+            <p class="loading">Converting...</p>
+        </div>
+
+        <div id="errorContainer" class="hidden">
+            <hr>
+            <blockquote>
+                <p id="errorMessage"></p>
+            </blockquote>
+        </div>
+
+        <div id="resultContainer" class="hidden">
+            <hr>
+            <div class="result-header">
+                <h2>Result</h2>
+                <button id="copyBtn">Copy</button>
+            </div>
+            <pre id="resultContent"></pre>
+        </div>
+
+        <hr>
+
+        <h2>API</h2>
+        <p>You can also use the API directly:</p>
+        <pre>GET /convert?url=https://example.com</pre>
+    </article>
+
+    <script>
+        const urlForm = document.getElementById('urlForm');
+        const fileForm = document.getElementById('fileForm');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultContent = document.getElementById('resultContent');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const errorContainer = document.getElementById('errorContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const copyBtn = document.getElementById('copyBtn');
+
+        function showLoading() {
+            loadingContainer.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+        }
+
+        function showResult(content) {
+            loadingContainer.classList.add('hidden');
+            errorContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            resultContent.textContent = content;
+        }
+
+        function showError(message) {
+            loadingContainer.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            errorContainer.classList.remove('hidden');
+            errorMessage.textContent = message;
+        }
+
+        urlForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = document.getElementById('urlInput').value;
+            showLoading();
+
+            try {
+                const response = await fetch(`/convert?url=${encodeURIComponent(url)}`);
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to convert URL');
+                }
+                const text = await response.text();
+                showResult(text);
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        fileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return;
+
+            showLoading();
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to convert file');
+                }
+                const text = await response.text();
+                showResult(text);
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(resultContent.textContent);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+        });
+    </script>
+</body>
+</html>
