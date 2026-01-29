@@ -10,6 +10,7 @@ RUN uv sync --frozen --no-dev
 
 COPY main.py .
 COPY templates templates/
+COPY static static/
 
 EXPOSE 8000
 
