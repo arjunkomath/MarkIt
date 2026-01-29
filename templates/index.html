@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>MarkIt - Convert to Markdown</title>
     <meta name="description" content="Convert URLs and files to Markdown. Simple, fast, and free.">
     <meta name="keywords" content="markdown, converter, url to markdown, file to markdown, html to markdown">
@@ -44,8 +45,12 @@
             font-size: 2.5em;
             font-weight: 700;
             margin: 0 0 8px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 20px;
+            border-bottom: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='6' viewBox='0 0 20 6'%3E%3Cpath d='M0 3 Q5 0 10 3 T20 3' fill='none' stroke='%23e5e5e5' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            background-position: bottom;
+            background-size: 20px 6px;
         }
 
         h1 + p {
@@ -66,8 +71,12 @@
 
         hr {
             border: none;
-            border-top: 1px solid #e5e5e5;
+            height: 6px;
             margin: 32px 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='6' viewBox='0 0 20 6'%3E%3Cpath d='M0 3 Q5 0 10 3 T20 3' fill='none' stroke='%23e5e5e5' stroke-width='1.5'/%3E%3C/svg%3E");
+            background-repeat: repeat-x;
+            background-position: center;
+            background-size: 20px 6px;
         }
 
         input[type="url"],
@@ -117,10 +126,14 @@
         }
 
         blockquote {
-            border-left: 3px solid #e74c3c;
+            border-left: none;
             margin: 0;
-            padding-left: 16px;
+            padding-left: 20px;
             color: #c0392b;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='20' viewBox='0 0 6 20'%3E%3Cpath d='M3 0 Q0 5 3 10 T3 20' fill='none' stroke='%23e74c3c' stroke-width='2'/%3E%3C/svg%3E");
+            background-repeat: repeat-y;
+            background-position: left;
+            background-size: 6px 20px;
         }
 
         .hidden {
@@ -158,6 +171,58 @@
 
         footer a:hover {
             background-color: #fff176;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #e5e5e5;
+                background: #1a1a1a;
+            }
+
+            h1 {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='6' viewBox='0 0 20 6'%3E%3Cpath d='M0 3 Q5 0 10 3 T20 3' fill='none' stroke='%23333' stroke-width='1.5'/%3E%3C/svg%3E");
+            }
+
+            h1 + p,
+            .loading,
+            footer {
+                color: #999;
+            }
+
+            hr {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='6' viewBox='0 0 20 6'%3E%3Cpath d='M0 3 Q5 0 10 3 T20 3' fill='none' stroke='%23333' stroke-width='1.5'/%3E%3C/svg%3E");
+            }
+
+            input[type="url"],
+            input[type="file"] {
+                background: #2a2a2a;
+                border-color: #333;
+                color: #e5e5e5;
+            }
+
+            input[type="url"]:focus,
+            input[type="file"]:focus {
+                border-color: #555;
+            }
+
+            button,
+            footer a {
+                color: #e5e5e5;
+            }
+
+            button:hover,
+            footer a:hover {
+                color: #1a1a1a;
+            }
+
+            pre {
+                background: #2a2a2a;
+                border-color: #333;
+            }
+
+            input::placeholder {
+                color: #666;
+            }
         }
     </style>
 </head>
@@ -212,7 +277,7 @@
         <hr>
 
         <footer>
-            Made by <a href="https://github.com/arjunkomath">Arjun Komath</a>
+            Made by <a href="https://github.com/arjunkomath">Arjun Komath</a> · <a href="https://github.com/arjunkomath/MarkIt">Source</a>
         </footer>
     </article>
 
